@@ -26,3 +26,15 @@ export const passwordRules = [
     .matches(/^(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,16}$/)
     .withMessage('Password must be 8-16 characters with one uppercase and one special character'),
 ]
+
+export const loginRules =[
+  body('email')
+    .trim()
+    .isEmail()
+    .withMessage('Invalid email address'),
+    
+  body('password')
+    .matches(/^(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,16}$/)
+    .withMessage('Password must be 8-16 characters with one uppercase and one special character'),
+
+]

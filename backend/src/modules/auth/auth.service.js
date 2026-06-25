@@ -1,9 +1,25 @@
-import pool from "../../config/db.js"
+import pool from "../../config/db.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
-export async function register(name, email, password, address) {
+function generateAccessToken(user){
+    return jwt.sign(
+    {
+      userId: user.id,
+      role: user.role,
+      name:user.name
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: process.env.JWT_EXPIRES_IN,
+      algorithm: "HS256",
+    },
+  );
+}
+
+export const register = async (name, email, password, address)=> {
     
-    const checkStatement = 'SELECT id, name, email, address, role, created_at FROM users WHERE email = $1';
+    const checkStatement = 'SELECT id FROM users WHERE email = $1';
     const checkParams = [email];
     const existingUser = await pool.query(checkStatement, checkParams);
 
@@ -22,4 +38,36 @@ export async function register(name, email, password, address) {
     const user = queryResult.rows[0];
     return user;
     
+};
+
+export const login = async (email, password)=>{
+
+    const checkStatement = 'SELECT *  FROM users WHERE email = $1';
+    const checkParams = [email];
+
+    const queryResult = await pool.query(checkStatement,checkParams);
+
+    if(queryResult.rowCount === 0){
+        const error = new Error('Invalid Email or Password');
+        error.status = 401;
+        throw error;
+    };
+
+    const match = await bcrypt.compare(password, queryResult.rows[0].password);
+
+    if(!match){
+        const error = new Error('Invalid Email or Password');
+        error.status = 401;
+        throw error;
+    }
+
+    const user = queryResult.rows[0];
+    delete user.password;
+
+    const accessToken = generateAccessToken(user);
+    return {
+        accessToken, 
+        user
+    };
+
 }
