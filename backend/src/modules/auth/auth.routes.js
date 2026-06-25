@@ -2,6 +2,7 @@ import {Router} from 'express';
 import { registerRules, passwordRules, loginRules } from './auth.validators.js'
 import validate from '../../middleware/validate.js'
 import * as AuthService from './auth.service.js';
+import authenticate from '../../middleware/authenticate.js'
 
 const router = Router();
 
@@ -48,4 +49,16 @@ router.post('/login', loginRules, validate, async (req, res, next)=>{
     }
 });
 
+
+router.patch('/password', passwordRules, validate, authenticate, async (req, res, next)=>{
+    try {
+        const {currentPassword, newPassword} = req.body;
+
+        await AuthService.updatePassword(req.user.id, currentPassword, newPassword);
+        res.json({ success:true, message:'Password changed successfully'});
+
+    } catch (err) {
+        next(err);
+    }
+});
 export default router

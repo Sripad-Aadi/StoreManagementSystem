@@ -5,9 +5,9 @@ import jwt from "jsonwebtoken";
 function generateAccessToken(user){
     return jwt.sign(
     {
-      userId: user.id,
+      id: user.id,
       role: user.role,
-      name:user.name
+      name: user.name
     },
     process.env.JWT_SECRET,
     {
@@ -69,5 +69,35 @@ export const login = async (email, password)=>{
         accessToken, 
         user
     };
+};
 
+export const updatePassword = async(userId, currentPassword, newPassword)=>{
+
+    const checkStatement = 'SELECT id, password from users where id = $1';
+    console.log(userId);
+    const checkParams = [userId];
+
+    const queryResult = await pool.query(checkStatement, checkParams);
+
+    if(queryResult.rowCount === 0){
+        const error = new Error('User not found');
+        error.status = 404;
+        throw error;
+    };
+
+    const match = await bcrypt.compare(currentPassword, queryResult.rows[0].password);
+
+    if(!match){
+        const error = new Error('Invalid Password');
+        error.status = 401;
+        throw error;
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    const updateStatement = 'UPDATE users SET password = $1 WHERE id = $2;'
+    const updateParams = [hashedPassword, userId];
+    await pool.query(updateStatement, updateParams);
+
+    return true;
 }

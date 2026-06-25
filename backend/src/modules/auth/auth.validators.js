@@ -22,17 +22,27 @@ export const registerRules = [
 ]
 
 export const passwordRules = [
-  body('password')
+  body('currentPassword')
+    .notEmpty()
+    .withMessage('Current password is required'),
+
+  body('newPassword')
     .matches(/^(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,16}$/)
-    .withMessage('Password must be 8-16 characters with one uppercase and one special character'),
-]
+    .withMessage('Password must be 8-16 characters with one uppercase and one special character')
+    .custom((value, { req }) => {
+      if (value === req.body.currentPassword) {
+        throw new Error('New password must be different from the current password');
+      }
+      return true;
+    }),
+];
 
 export const loginRules =[
   body('email')
     .trim()
     .isEmail()
     .withMessage('Invalid email address'),
-    
+
   body('password')
     .matches(/^(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,16}$/)
     .withMessage('Password must be 8-16 characters with one uppercase and one special character'),
