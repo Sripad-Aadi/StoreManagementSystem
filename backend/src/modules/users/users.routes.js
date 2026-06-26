@@ -8,8 +8,9 @@ import authorize from "../../middleware/authorize.js"
 const router = Router();
 
 router.use(authenticate);
+router.use(authorize('owner'));
 
-router.post("/", createUserRules, validate, authorize('owner'), async (req, res, next)=>{
+router.post("/", createUserRules, validate, async (req, res, next)=>{
     try {
         const { name, email, password, address, role} = req.body;
 
@@ -32,10 +33,10 @@ router.post("/", createUserRules, validate, authorize('owner'), async (req, res,
     }
 });
 
-router.get("/", getUsersRules, validate, authorize('owner'), async (req, res, next)=>{
+router.get("/", getUsersRules, validate, async (req, res, next)=>{
     try {
         const users = await UserService.getUsersService(req.query);
-        return res.status(201).json({
+        return res.status(200).json({
             success: true,
             message: "User detailes fetched Successfully",
             user: users,

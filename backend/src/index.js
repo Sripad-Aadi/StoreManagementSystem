@@ -7,6 +7,8 @@ import seed from './config/seed.js';
 import errorHandler from './middleware/errorHandler.js';
 import authRouter from './modules/auth/auth.routes.js';
 import usersRouter from './modules/users/users.routes.js';
+import storesRouter from './modules/stores/stores.routes.js';
+import ratingsRouter from './modules/ratings/ratings.routes.js';
 
 const app = express();
 
@@ -29,6 +31,8 @@ app.get('/api/health',(req, res)=>{
 
 app.use('/api/auth',authRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/stores', storesRouter);
+app.use('/api/ratings', ratingsRouter);
 
 app.use(errorHandler);
 
@@ -47,3 +51,4 @@ async function startServer() {
 }
 
 startServer();
+export default app;

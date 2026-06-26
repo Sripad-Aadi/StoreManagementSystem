@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "migrate": "node src/config/migrate.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles"
   },
   "keywords": [],
   "author": "",
@@ -21,5 +22,10 @@
     "jsonwebtoken": "^9.0.3",
     "nodemon": "^3.1.14",
     "pg": "^8.22.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-node": "^29.7.0",
+    "supertest": "^7.1.4"
   }
 }

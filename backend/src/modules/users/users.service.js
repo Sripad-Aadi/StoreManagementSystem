@@ -41,7 +41,7 @@ export const getUsersService = async (filters) => {
         COALESCE(AVG(r.value), 0.0) as average_rating
         FROM users u
         LEFT JOIN ratings r ON u.id = r.user_id
-        WHERE u.role != 'owner'
+        WHERE 1=1
     `;
     
     const queryParams = [];
@@ -54,7 +54,7 @@ export const getUsersService = async (filters) => {
     }
 
     if (search) {
-        queryText += ` AND (u.name ILIKE $${paramIndex} OR u.email ILIKE $${paramIndex})`;
+        queryText += ` AND (u.name ILIKE $${paramIndex} OR u.email ILIKE $${paramIndex} OR u.address ILIKE $${paramIndex})`;
         queryParams.push(`%${search}%`);
         paramIndex++;
     }
@@ -78,7 +78,7 @@ export const getUsersService = async (filters) => {
         role: user.role
         };
 
-        if (user.role === 'admin') {
+        if (user.role === 'owner') {
         response.rating = parseFloat(parseFloat(user.average_rating).toFixed(1));
         }
 
