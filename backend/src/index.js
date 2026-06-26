@@ -6,6 +6,7 @@ import createTables from './config/schema.js'
 import seed from './config/seed.js';
 import errorHandler from './middleware/errorHandler.js';
 import authRouter from './modules/auth/auth.routes.js';
+import usersRouter from './modules/users/users.routes.js';
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.get('/api/health',(req, res)=>{
 });
 
 app.use('/api/auth',authRouter);
+app.use('/api/users', usersRouter);
 
 app.use(errorHandler);
 
